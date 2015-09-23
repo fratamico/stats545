@@ -1,0 +1,30 @@
+---
+title: "class_ggplot"
+output: html_document
+---
+
+# Class in which we learned about ggplot2
+
+Load the library
+```{r}
+library(ggplot2)
+```
+
+Load the data. And check out a summary of it so we can know the makeup of it.
+```{r}
+library(gapminder)
+str(gapminder)
+```
+
+## Let's make some plots...
+
+Assigning the plot to an object. aes is the aesthetic mapping. this one specifies it's a scatterplot and the x and y.
+```{r}
+p <- ggplot(gapminder, aes(x=gdpPercap, y=lifeExp))
+```
+
+Shows the points, geom_line() would fit a line.
+```{r}
+plot(p + geom_point())
+```
+
