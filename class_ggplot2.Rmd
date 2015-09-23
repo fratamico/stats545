@@ -1,8 +1,8 @@
 ---
-title: "class_ggplot"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
-
 # Class in which we learned about ggplot2
 
 Load the library
