@@ -1,0 +1,149 @@
+---
+title: "class_dplyr_2"
+author: "Lauren Fratamico"
+date: "October 1, 2015"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load dplyr and the Gapminder data
+
+```{r}
+suppressPackageStartupMessages(library(dplyr))
+library(gapminder)
+gtbl <- gapminder %>%
+  tbl_df
+gtbl %>%
+  glimpse
+```
+
+Not sure why the pipe is helpful here????
+
+## Use mutate() to add new variables
+
+```{r}
+gtbl <- gtbl %>%
+  mutate(gdp = pop * gdpPercap)
+gtbl %>%
+  glimpse
+```
+
+```{r}
+just_canada <- gtbl %>%
+  filter(country == "Canada")
+## this is a dangerous way to add this variable (dangerous because you are adding a length 12 vector of the canada gdp. Should really pull the canada gdp per each year encountered in the data frame.)
+## doing it this way so we don't get too fancy yet
+gtbl <- gtbl %>%
+  mutate(canada = rep(just_canada$gdpPercap, nlevels(country)),
+         gdpPercapRel = gdpPercap / canada)
+gtbl %>%
+  select(country, year, gdpPercap, canada, gdpPercapRel)
+```
+
+
+```{r}
+gtbl %>%
+  select(gdpPercapRel) %>%
+  summary
+```
+
+
+## Use arrange() to row-order data in a principled way
+
+```{r}
+gtbl %>%
+  arrange(year, country)
+```
+
+```{r}
+gtbl %>%
+  filter(year == 2007) %>%
+  arrange(lifeExp)
+```
+
+```{r}
+gtbl %>%
+  filter(year == 2007) %>%
+  arrange(desc(lifeExp))
+```
+
+## Use rename() to rename variables
+
+```{r}
+gtbl %>%
+  rename(life_exp = lifeExp,
+         gdp_percap = gdpPercap,
+         gdp_percap_rel = gdpPercapRel)
+```
+
+## Counting things up
+
+```{r}
+gtbl %>%
+  group_by(continent) %>%
+  summarize(n_obs = n())
+```
+
+Could instead use tally to count:
+```{r}
+gtbl %>%
+  group_by(continent) %>%
+  tally #could also be tally(). just so we know that tally is a function
+```
+
+Number of unique contries per continent
+```{r}
+gtbl %>%
+  group_by(continent) %>%
+  summarize(n_obs = n(),
+            n_countries = n_distinct(country))
+```
+
+
+## General summarization
+
+```{r}
+gtbl %>%
+  group_by(continent) %>%
+  summarize(avg_lifeExp = mean(lifeExp))
+```
+
+```{r}
+gtbl %>%
+  filter(year %in% c(1952, 2007)) %>%
+  group_by(continent, year) %>%
+  summarise_each(funs(mean, median), lifeExp, gdpPercap) #funs creates a list of function calls
+```
+
+```{r}
+gtbl %>%
+  filter(continent == "Asia") %>%
+  group_by(year) %>%
+  summarize(min_lifeExp = min(lifeExp), max_lifeExp = max(lifeExp))
+```
+
+## Window functions
+These take n inputs and give back n inputs
+
+```{r}
+gtbl %>%
+  filter(continent == "Asia") %>%
+  select(year, country, lifeExp) %>%
+  arrange(year) %>%
+  group_by(year) %>%
+  filter(min_rank(desc(lifeExp)) < 2 | min_rank(lifeExp) < 2)
+```
+
+```{r}
+asia <- gtbl %>%
+  filter(continent == "Asia") %>%
+  select(year, country, lifeExp) %>%
+  arrange(year) %>%
+  group_by(year)
+asia
+```
+
+

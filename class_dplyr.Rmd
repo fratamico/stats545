@@ -1,0 +1,89 @@
+---
+title: "class_dplyr"
+author: "Lauren Fratamico"
+date: "September 29, 2015"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setup
+
+Install and load dplyr and load gapminder:
+
+```{r}
+suppressPackageStartupMessages(library(dplyr)) #suppresses the output
+library(gapminder)
+```
+
+Let's look at some gapminder data
+
+```{r}
+str(gapminder)
+head(gapminder)
+```
+
+
+Turn the data frame into a tbl_df. This is not necessary for dplyr, but it allows it some nice functions.
+```{r}
+gtbl <- tbl_df(gapminder)
+gtbl
+glimpse(gtbl)
+```
+
+
+Can store subsets of data
+```{r}
+(snippet <- subset(gapminder, country == "Canada"))
+```
+
+## Filtering
+
+filter is useful for subsetting data row-wise
+```{r}
+filter(gtbl, lifeExp < 29)
+filter(gtbl, country == "Rwanda")
+filter(gtbl, country %in% c("Rwanda", "Afghanistan"))
+```
+
+In base R, we could filter/subset like so:
+```{r}
+gapminder[gapminder$lifeExp < 29, ]
+subset(gapminder, country == "Rwanda")
+```
+
+
+## Pipe object
+
+The pipe object pipes the left as the first argument to the right. More useful when chaining function calls - more readable.
+```{r}
+gapminder %>% head #same as head(gapminder)
+gapminder %>% head(3)
+```
+
+
+Select with the pipe to get just the head
+```{r}
+select(gtbl, year, lifeExp)
+gtbl %>%
+  select(year, lifeExp) %>%
+  head(4)
+```
+
+More practive with pipe
+```{r}
+gtbl %>%
+  filter(country == "Cambodia") %>%
+  select(year, lifeExp)
+
+# typical R command would look like:
+gapminder[gapminder$country == "Cambodia", c("year", "lifeExp")]
+# or like:
+subset(gapminder, country == "Cambodia", select = c(year, lifeExp))
+```
+
+
+
+

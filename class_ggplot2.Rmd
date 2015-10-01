@@ -24,7 +24,7 @@ p <- ggplot(gapminder, aes(x=gdpPercap, y=lifeExp))
 ```
 
 Shows the points, geom_line() would fit a line.
-```{r}
+```{r base_plot}
 p + geom_point()
 ```
 

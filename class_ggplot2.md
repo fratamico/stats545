@@ -37,5 +37,5 @@ Shows the points, geom_line() would fit a line.
 p + geom_point()
 ```
 
-![](class_ggplot2_files/figure-html/unnamed-chunk-4-1.png) 
+![](class_ggplot2_files/figure-html/base_plot-1.png) 
 
