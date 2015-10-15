@@ -2,7 +2,9 @@
 title: "class_dplyr"
 author: "Lauren Fratamico"
 date: "September 29, 2015"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}

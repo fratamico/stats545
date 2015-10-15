@@ -1,0 +1,41 @@
+---
+title: "class_tidydata_reshaping"
+author: "Lauren Fratamico"
+date: "October 15, 2015"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setup
+
+
+```{r}
+#install.packages("devtools")
+library(devtools)
+#install_github("rstudio/EDAWR")
+library(EDAWR)
+
+#install.packages("tidyr")
+library(tidyr)
+```
+
+
+## tidyr functions
+```{r}
+?gather
+?spread
+
+gather(cases, "year", "n", 2:4)
+#cases is the data frame to reshape
+#year is the name of the new column (key)
+#n is the name of the new column (value)
+#2:4 is the names or numeric indexes of columns to collapse
+
+
+```
+
