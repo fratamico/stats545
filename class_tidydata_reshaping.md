@@ -24,7 +24,12 @@ library(tidyr)
 ```r
 ?gather
 ?spread
+```
 
+
+### gather
+
+```r
 gather(cases, "year", "n", 2:4)
 ```
 
@@ -46,5 +51,26 @@ gather(cases, "year", "n", 2:4)
 #year is the name of the new column (key)
 #n is the name of the new column (value)
 #2:4 is the names or numeric indexes of columns to collapse
+```
+
+### spread
+
+```r
+spread(pollution, size, amount)
+```
+
+```
+##       city large small
+## 1  Beijing   121    56
+## 2   London    22    16
+## 3 New York    23    14
+```
+
+```r
+#pollution is data frame to reshape
+#size is the column to use for keys (new columns names)
+#amount is the column to use for values (new column cells)
+
+#can specify what you want in the spaceholder places with additional parameters
 ```
 
