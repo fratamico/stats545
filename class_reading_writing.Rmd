@@ -1,0 +1,122 @@
+---
+title: "class_reading_writing"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load gapminder data
+```{r}
+#this tells us where the file is. It's in the package gapminder, so we don't need to download it separatly.
+(gap_tsv <- system.file("gapminder.tsv", package = "gapminder"))
+```
+
+## Bring the data in
+```{r}
+#tab separated, no quoting characters
+gapminder <- read.table(gap_tsv, header = TRUE, sep = "\t", quote = "")
+str(gapminder)
+
+#could instead use read.delim()
+#what default values does read.delim have??? no quote chars?
+#read.csv() is the equivalent for csv files
+gapminder <- read.delim(gap_tsv)
+str(gapminder)
+
+
+#one other way is to use readr
+#this will NOT convert the strings to factors
+library(readr)
+gapminder <- read_tsv(gap_tsv)
+str(gapminder)
+#to convert to factors:
+gapminder$country <- factor(gapminder$country)
+gapminder$continent <- factor(gapminder$continent)
+str(gapminder)
+```
+
+## Function for linear modeling
+To produce something worthy of export
+```{r}
+suppressPackageStartupMessages(library(dplyr))
+le_lin_fit <- function(dat, offset = 1952) {
+  the_fit <- lm(lifeExp ~ I(year - offset), dat)
+  setNames(data.frame(t(coef(the_fit))), c("intercept", "slope"))
+}
+gfits <- gapminder %>%
+  group_by(country, continent) %>% 
+  do(le_lin_fit(.)) %>% 
+  ungroup()
+gfits
+```
+
+## Write to file
+```{r}
+#This unfortunately writes the row numbers and has quotes areound everything
+write.table(gfits, "gfits.tsv")
+#"gifts.tsv" %>%
+#  readlines(n=6) %>%
+#  cat(sep="\n")
+
+#Instead can do this
+write.table(gfits, "gfits.tsv", quote = FALSE, sep = "\t", row.names = FALSE)
+
+#readr works too! with less arguments
+write_tsv(gfits, "gfits.tsv")
+```
+
+## Reorder
+```{r}
+head(levels(gfits$country)) # alphabetical order
+gfits <- gfits %>% 
+  mutate(country = reorder(country, intercept))
+head(levels(gfits$country)) # in increasing order of 1952 life expectancy
+head(gfits)
+```
+
+## saveRDS() and readRDS()
+
+```{r, error=TRUE}
+#writes an R object to file
+#for example,m this would save the manipulation of factor levels
+saveRDS(gfits, "gfits.rds")
+
+#to read it back
+rm(gfits)
+gfits
+gfits <- readRDS("gfits.rds")
+gfits
+```
+
+
+## Play around with some data
+```{r, error=TRUE}
+# install.packages("googlesheets")
+# or
+# devtools::install_github("jennybc/googlesheets")
+library(googlesheets)
+library(dplyr)
+library(readr)
+
+#need to go to website
+gs_auth(new_user = TRUE)
+
+candy_key <- "1REZvjqv0lj3dEYb0CsGyDXkXrjhJ4izlAEImgaufjCc"
+candy_ss <- candy_key %>% 
+  gs_key(lookup = FALSE)  
+candy_ss
+
+
+## for the moment, read to local csv then import
+## currently getting errors here
+candy_ss %>%
+  gs_download(to = "candy.csv")
+candy <- read_csv("candy.csv")
+candy
+```
+
+
