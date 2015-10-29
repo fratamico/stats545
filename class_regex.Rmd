@@ -1,0 +1,102 @@
+---
+title: "class_regex"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setup
+
+```{r}
+#install.packages("stringr")
+library("stringr")
+library("dplyr")
+library("ggplot2")
+```
+
+
+## Basic string manipulaiton
+```{r}
+test_str <- c("STAT545 is great!", "Wooooo!")
+nchar(test_str)
+
+#Extract the 1st through 7th elements
+substr(test_str, 1, 7)
+
+#Replace the 1st through 7th elemebt with SCIENCE
+substr(test_str, 1, 7) <- "SCIENCE"
+test_str
+```
+
+## paste - concatenate or combine strings
+```{r}
+#default is a single space
+paste("abc", "efg")
+
+#can define a separator
+paste("abc", "efg", sep = "")
+#or eqivalently
+paste0("abc", "efg")
+
+#to combine multi value vectors, also need collapse
+paste(c("abc", "efg"), c("hij", "klm"), sep = "", collapse = "")
+```
+
+## strsplit - split a string into a list of substrings
+
+```{r}
+x <- c("abc,cbe", "cb,gb,aaa")
+#split based on commas
+strsplit(x, split = ",")
+
+#that returns a list, so perhaps we only want every second element of each
+strsplit(x, split = ",") %>% lapply(function(x) x[2])
+```
+
+## Regex in R
+
+R has some regex that makes it more readable. Can also use the \\w etc equivalents. Examples:
+
+* \w = [[:alnum:]]
+* \d = [[:digit:]]
+* \s = [[:space:]]
+
+You often need to double escape, eg \\\\w
+
+## Load some tweets to experiment with
+
+```{r}
+news_tweets <- read.delim("https://www.dropbox.com/s/cbgcpkizun51wbk/news_tweets.txt?dl=1", header = TRUE, stringsAsFactors = FALSE, sep = "\t", quote = "", allowEscapes = TRUE)
+glimpse(news_tweets)
+```
+
+* user_name = twitter user name (shortened)
+* created = date tweeted
+* retweets = number of retweets to date
+* text = the raw text of the tweet
+
+## grep - find a pattern in a character vector
+```{r}
+#find tweets that contain hashtags
+# two identical ways of writing this regex:
+hastag_pattern <- "#\\w+"
+hastag_pattern <- "#[[:alnum:]]+"
+
+#gives the row number of the tweet that contains a hashtag
+grep(hastag_pattern, news_tweets$text)
+
+#Setting value = TRUE returns the actual value of the vector at those indexes:
+grep(hastag_pattern, news_tweets$text, value = TRUE) %>% head(n = 5)
+
+#cal also return the ones that do not contain has tag with invert=TRUE
+grep(hastag_pattern, news_tweets$text, value = TRUE, invert = TRUE) %>% head(n = 5)
+```
+
+
+
+
+
